@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accounts</title>
+</head>
+<body>
+<h1>Accounts</h1>
+<div>
+  <table>
+    <tbody>
+    <tr>
+      <td>ID</td>
+      <td>IBAN</td>
+      <td>BALANCE</td>
+    </tr>
+    <tr th:each="account:${accounts}">
+      <td th:text="${account.id}"></td>
+      <td th:text="${account.iban}"></td>
+      <td th:text="${account.balance}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
