@@ -27,15 +27,28 @@ public class AccountServiceImpl {
     }
 
     private Account getAccountById(long id) {
-        return accountRepository.findById(id).get();
+        try {
+
+            return accountRepository.findById(id).get();
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void saveOrUpdate(Account account) {
-        account.setIban(getIban());
-        accountRepository.save(account);
+        try {
+            account.setIban(getIban());
+            accountRepository.save(account);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void delete(long id) {
-        accountRepository.deleteById(id);
+        try {
+            accountRepository.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

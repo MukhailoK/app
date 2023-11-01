@@ -3,7 +3,6 @@ package de.ait.app.controllers;
 import de.ait.app.model.Account;
 import de.ait.app.services.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,7 @@ public class AccountControllerWeb {
     private AccountServiceImpl accountService;
 
     @GetMapping("/register_acc")
-    public String blablabla() {
+    public String registerAcc() {
         return "accountRegister";
     }
 
