@@ -3,10 +3,12 @@ package de.ait.app.services;
 import de.ait.app.model.Account;
 import de.ait.app.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl {
@@ -50,5 +52,9 @@ public class AccountServiceImpl {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Account getById(long id){
+        return accountRepository.getById(id);
     }
 }
