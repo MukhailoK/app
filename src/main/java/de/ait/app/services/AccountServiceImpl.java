@@ -3,12 +3,10 @@ package de.ait.app.services;
 import de.ait.app.model.Account;
 import de.ait.app.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountServiceImpl {
@@ -16,7 +14,7 @@ public class AccountServiceImpl {
     private static final String country = "DE ";
     private long num = 1000000000000L;
 
-    private String getIban() {
+    private String generateIban() {
         return country + ++num;
 
     }
@@ -28,7 +26,7 @@ public class AccountServiceImpl {
         return new ArrayList<>(accountRepository.findAll());
     }
 
-    private Account getAccountById(long id) {
+    public Account getAccountById(long id) {
         try {
 
             return accountRepository.findById(id).get();
@@ -37,9 +35,16 @@ public class AccountServiceImpl {
         }
     }
 
-    public void saveOrUpdate(Account account) {
+    public void save(Account account) {
+            account.setIban(generateIban());
+            accountRepository.save(account);
+
+    }
+
+    public void update(long id, double sum) {
+        Account account = accountRepository.findById(id).get();
         try {
-            account.setIban(getIban());
+            account.setBalance(sum);
             accountRepository.save(account);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
@@ -52,9 +57,5 @@ public class AccountServiceImpl {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Account getById(long id){
-        return accountRepository.getById(id);
     }
 }

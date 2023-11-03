@@ -3,7 +3,6 @@ package de.ait.app.controllers;
 import de.ait.app.model.Account;
 import de.ait.app.services.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,54 +19,39 @@ public class AccountRestController {
         if (!accountService.getAllAccounts().isEmpty()) {
             return accountService.getAllAccounts();
         } else
-            throw new RuntimeException(new NullPointerException());
+            throw new NullPointerException();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Account createAccount(@RequestBody Account account) {
         if (!accountService.getAllAccounts().contains(account) &&
-                account.getBalance() >= 0) {
-            accountService.saveOrUpdate(account);
+                account.getBalance() > 0) {
+            accountService.save(account);
             return account;
         } else
-            throw new RuntimeException(new IllegalArgumentException());
+            throw new IllegalArgumentException();
     }
 
-    @DeleteMapping
-    public void deleteAccount(@RequestBody Long id) {
-        if (accountService.getById(id) != null) {
-            accountService.delete(id);
-        } else
-            throw new RuntimeException(new ChangeSetPersister.NotFoundException());
+    @DeleteMapping("/{id}/delete")
+    public void deleteAccount(@PathVariable Long id) {
+        accountService.delete(id);
     }
 
-    @PutMapping("/withdraw")
-    public Account withdraw(@RequestBody Account account) {
-        if (accountService.getAllAccounts().contains(account)) {
-            if (account.getBalance() < 0) {
-                account.setBalance(-account.getBalance());
-            }
-            double balance = accountService.getById(account.getId()).getBalance() - account.getBalance();
-            account.setBalance(balance);
-            accountService.saveOrUpdate(account);
-            return accountService.getById(account.getId());
-        } else
-            throw new RuntimeException(new ChangeSetPersister.NotFoundException());
-
+    @PutMapping("/{id}/withdraw")
+    public Account withdraw(@RequestBody double sum, @PathVariable long id) {
+        if (sum > 0) {
+            sum = -sum;
+        }
+        accountService.update(id, sum);
+        return accountService.getAccountById(id);
     }
 
-    @PutMapping("/toAdd")
-    public Account toAdd(@RequestBody Account account) {
-        if (accountService.getAllAccounts().contains(account)) {
-            if (account.getBalance() < 0) {
-                account.setBalance(-account.getBalance());
-            }
-            double balance = accountService.getById(account.getId()).getBalance() + account.getBalance();
-            account.setBalance(balance);
-            accountService.saveOrUpdate(account);
-            return accountService.getById(account.getId());
-        } else
-            throw new RuntimeException(new ChangeSetPersister.NotFoundException());
-
+    @PutMapping("/{id}/deposit")
+    public Account deposit(@RequestBody double sum, @PathVariable long id) {
+        if (sum < 0) {
+            sum = -sum;
+        }
+        accountService.update(id, sum);
+        return accountService.getAccountById(id);
     }
 }
