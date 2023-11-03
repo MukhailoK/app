@@ -27,28 +27,22 @@ public class AccountServiceImpl {
     }
 
     public Account getAccountById(long id) {
-        try {
-
-            return accountRepository.findById(id).get();
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
     public void save(Account account) {
-            account.setIban(generateIban());
-            accountRepository.save(account);
+        account.setIban(generateIban());
+        accountRepository.save(account);
 
     }
 
     public void update(long id, double sum) {
-        Account account = accountRepository.findById(id).get();
-        try {
-            account.setBalance(sum);
-            accountRepository.save(account);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setBalance(sum);
+        accountRepository.save(account);
     }
 
     public void delete(long id) {
