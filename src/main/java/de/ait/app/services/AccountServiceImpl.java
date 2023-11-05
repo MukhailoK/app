@@ -2,7 +2,9 @@ package de.ait.app.services;
 
 import de.ait.app.dto.AccountResponseDTO;
 import de.ait.app.model.Account;
+import de.ait.app.model.AccountDTO;
 import de.ait.app.repositories.AccountRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl {
 
     private static final String country = "DE ";
@@ -22,30 +25,35 @@ public class AccountServiceImpl {
     }
 
     @Autowired
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    public List<AccountResponseDTO> getAllAccounts() {
+    private final AccountResponseDTO accountResponseDTO;
 
-        return new ArrayList<>(AccountResponseDTO.from(accountRepository.findAll()));
+    public List<AccountDTO> getAllAccounts() {
+        return new ArrayList<>(accountResponseDTO.apply(accountRepository.findAll()));
     }
 
-    public AccountResponseDTO getAccountById(Long id) {
-        return AccountResponseDTO.from(accountRepository.findById(id)
+    public AccountDTO getAccountById(Long id) {
+        return accountResponseDTO.apply(accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found")));
     }
 
-    public AccountResponseDTO save(Account account) {
+    public AccountDTO save(Account account) {
         account.setIban(generateIban());
-        return AccountResponseDTO.from(accountRepository.save(account));
+        return accountResponseDTO.apply(accountRepository.save(account));
     }
 
-    public AccountResponseDTO update(Long id, Double sum) {
+    public AccountDTO update(Long id, Double sum) {
         Account account = (accountRepository.findById(id).orElseThrow(() -> new RuntimeException("not found")));
         account.setBalance(account.getBalance() + sum);
-        return AccountResponseDTO.from(accountRepository.save(account));
+        return accountResponseDTO.apply(accountRepository.save(account));
     }
 
-    public void delete(Long id) {
-        accountRepository.deleteById(id);
+    public Boolean delete(Long id) {
+        if (accountRepository.findById(id).isPresent()) {
+            accountRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

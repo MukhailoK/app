@@ -1,26 +1,22 @@
 package de.ait.app.dto;
 
 import de.ait.app.model.Account;
-import lombok.*;
+import de.ait.app.model.AccountDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Function;
 
-@Data
-@Builder
-@AllArgsConstructor
-public class AccountResponseDTO {
-    private Long id;
-    private String iban;
-    private double balance;
+@Component
+public class AccountResponseDTO implements Function<Account, AccountDTO> {
 
-
-    public static AccountResponseDTO from(Account account) {
-        return new AccountResponseDTO(account.getId(),
-                account.getIban(),
+    @Override
+    public AccountDTO apply(Account account) {
+        return new AccountDTO(account.getIban(),
                 account.getBalance());
     }
 
-    public static List<AccountResponseDTO> from(List<Account> accounts) {
-        return accounts.stream().map(AccountResponseDTO::from).toList();
+    public List<AccountDTO> apply(List<Account> accounts) {
+        return accounts.stream().map(this).toList();
     }
 }
