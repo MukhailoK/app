@@ -1,5 +1,6 @@
 package de.ait.app.services;
 
+import de.ait.app.dto.AccountResponseDTO;
 import de.ait.app.model.Account;
 import de.ait.app.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,42 +15,37 @@ public class AccountServiceImpl {
     private static final String country = "DE ";
     private long num = 1000000000000L;
 
+
     private String generateIban() {
         return country + ++num;
 
     }
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountRepository accountRepository;
 
-    public List<Account> getAllAccounts() {
-        return new ArrayList<>(accountRepository.findAll());
+    public List<AccountResponseDTO> getAllAccounts() {
+
+        return new ArrayList<>(AccountResponseDTO.from(accountRepository.findAll()));
     }
 
-    public Account getAccountById(long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+    public AccountResponseDTO getAccountById(Long id) {
+        return AccountResponseDTO.from(accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found")));
     }
 
-    public void save(Account account) {
+    public AccountResponseDTO save(Account account) {
         account.setIban(generateIban());
-        accountRepository.save(account);
-
+        return AccountResponseDTO.from(accountRepository.save(account));
     }
 
-    public void update(long id, double sum) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
-        account.setBalance(sum);
-        accountRepository.save(account);
+    public AccountResponseDTO update(Long id, Double sum) {
+        Account account = (accountRepository.findById(id).orElseThrow(() -> new RuntimeException("not found")));
+        account.setBalance(account.getBalance() + sum);
+        return AccountResponseDTO.from(accountRepository.save(account));
     }
 
-    public void delete(long id) {
-        try {
-            accountRepository.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
+    public void delete(Long id) {
+        accountRepository.deleteById(id);
     }
 }

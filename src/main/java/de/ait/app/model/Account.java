@@ -10,15 +10,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "ACCOUNTS")
-@EqualsAndHashCode(exclude = {"iban", "balance"})
+@EqualsAndHashCode(exclude = {"balance", "id"})
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String iban;
-    private double balance;
+    private Double balance;
 
-    public Account(double balance) {
+    public Account(Double balance) {
         this.balance = balance;
     }
 }
